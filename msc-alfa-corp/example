@@ -22,4 +22,48 @@ services:
       ACAPY_AUTO_PING_CONNECTION: "true"
     command: "start --admin 0.0.0.0 8031"
 
+curl -d '{"seed": "00011100011100011100", "role": "TRUST_ANCHOR", "alias": "alpha-corp"}' -X POST http://test.bcovrin.vonx.io/register
 
+
+
+version: '3.1'
+
+services:
+
+  alice:
+    image: aries-cloudagent-run
+    ports:
+      - "8031:8031"
+      - "8880:8880"
+    environment:
+      ACAPY_ENDPOINT: "http://192.168.1.4:8880"
+      ACAPY_AUTO_PROVISION: "true"
+      ACAPY_GENESIS_URL: http://test.bcovrin.vonx.io/genesis
+      ACAPY_INBOUND_TRANSPORT: "[[\"http\", \"0.0.0.0\", \"8880\"]]"
+      ACAPY_OUTBOUND_TRANSPORT: http
+      LEDGER_URL: http://test.bcovrin.vonx.io
+      ACAPY_TRACE_TARGET: log
+      ACAPY_TRACE_TAG: acapy.event
+      ACAPY_WEBHOOK_URL: "https://aueb-alice.free.beeceptor.com"
+      ACAPY_ADMIN_INSECURE_MODE: "true"
+      ACAPY_AUTO_PING_CONNECTION: "true"
+    command: "start --admin 0.0.0.0 8031"
+
+  faber:
+    image: aries-cloudagent-run
+    ports:
+      - "8021:8021"
+      - "8882:8882"
+    environment:
+      ACAPY_ENDPOINT: "http://192.168.1.4:8882"
+      ACAPY_AUTO_PROVISION: "true"
+      ACAPY_GENESIS_URL: http://test.bcovrin.vonx.io/genesis
+      ACAPY_INBOUND_TRANSPORT: "[[\"http\", \"0.0.0.0\", \"8882\"]]"
+      ACAPY_OUTBOUND_TRANSPORT: http
+      LEDGER_URL: http://test.bcovrin.vonx.io
+      ACAPY_TRACE_TARGET: log
+      ACAPY_TRACE_TAG: acapy.event
+      ACAPY_WEBHOOK_URL: "https://aueb-uni.free.beeceptor.com"
+      ACAPY_ADMIN_INSECURE_MODE: "true"
+      ACAPY_AUTO_PING_CONNECTION: "true"
+    command: "start --admin 0.0.0.0 8021"
