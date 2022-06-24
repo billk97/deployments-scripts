@@ -17,7 +17,37 @@ services:
       MYSQL_USER: "${MY_SQL_ROOT_USER}"
       MYSQL_PASSWORD: "${MY_SQL_PASSWORD}"
     ports:
-      - "3308:3306"
+      - "3309:3306"
+  acapy:
+    image: vskgr/aca-py
+    environment:
+      WAIT_HOSTS: "db:5432"
+      WAIT_HOSTS_TIMEOUT: "300"
+      WAIT_SLEEP_INTERVAL: "5"
+      WAIT_HOST_CONNECT_TIMEOUT: "3"
+      ACAPY_ENDPOINT: "${ACAPY_ENDPOINT}"
+      ACAPY_GENESIS_URL: "${LEDGER_URL}/genesis"
+      ACAPY_INBOUND_TRANSPORT: "[[\"http\", \"0.0.0.0\", \"8880\"]]"
+      ACAPY_OUTBOUND_TRANSPORT: http
+      LEDGER_URL: "${LEDGER_URL}"
+      ACAPY_TAILS_SERVER_BASE_URL: "${TAILS_SERVER_URL}"
+      ACAPY_TRACE_TARGET: log
+      ACAPY_TRACE_TAG: acapy.event
+      ACAPY_WEBHOOK_URL: "${WEB_HOOK_URL}"
+      ACAPY_WALLET_TYPE: "indy"
+      ACAPY_WALLET_KEY: "${ACAPY_WALLET_KEY}"
+      ACAPY_WALLET_NAME: "alpha_corp"
+      ACAPY_WALLET_STORAGE_TYPE: "postgres_storage"
+      ACAPY_WALLET_STORAGE_CONFIG: '{"url":"db:5432","max_connections":5}'
+      ACAPY_WALLET_STORAGE_CREDS: '{"account": "postgres","password":"password","admin_account":"postgres","admin_password":"password"}'
+      ACAPY_WALLET_SEED: "${ACAPY_WALLET_SEED}"
+      ACAPY_AUTO_PROVISION: "true"
+      ACAPY_ADMIN_INSECURE_MODE: "true"
+      ACAPY_AUTO_PING_CONNECTION: "true"
+      ACAPY_LABEL: "${ACAPY_LABEL}"
+      ACAPY_LOG_LEVEL: "${ACAPY_LOG_LEVEL}"
+    command: "start --admin 0.0.0.0 ${ACAPY_ADMIN_PORT}"
+
   db:
     image: postgres:latest
     hostname: db
@@ -43,4 +73,13 @@ services:
         --host 0.0.0.0
         --port 6543
         --storage-path /tails-files
-        --log-level INFO      
+        --log-level INFO
+  pgAdmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"

@@ -1,0 +1,25 @@
+services:
+  acapy:
+    image: custom-aca-py
+    ports:
+      - "8888:8888"
+      - "9999:9999"
+    environment:
+      WAIT_HOSTS: "db:5432"
+      WAIT_HOSTS_TIMEOUT: "300"
+      WAIT_SLEEP_INTERVAL: "5"
+      WAIT_HOST_CONNECT_TIMEOUT: "3"
+      ACAPY_ENDPOINT: "http://192.168.1.4:8880"
+      ACAPY_AUTO_PROVISION: "true"
+      ACAPY_GENESIS_URL: http://test.bcovrin.vonx.io/genesis
+      ACAPY_INBOUND_TRANSPORT: "[[\"http\", \"0.0.0.0\", \"8880\"]]"
+      ACAPY_OUTBOUND_TRANSPORT: http
+      LEDGER_URL: http://test.bcovrin.vonx.io
+      ACAPY_TRACE_TARGET: log
+      ACAPY_TRACE_TAG: acapy.event
+      ACAPY_WEBHOOK_URL: "https://aueb-alice.free.beeceptor.com"
+      ACAPY_ADMIN_INSECURE_MODE: "true"
+      ACAPY_AUTO_PING_CONNECTION: "true"
+    command: "start --admin 0.0.0.0 8031"
+
+
