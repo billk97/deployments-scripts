@@ -1,36 +1,19 @@
 version: '3'
 
 services:
-  controller:
-    image: vskgr/controller
-    depends_on:
-      - mysql
-    ports:
-      - "${CONROLLER_PORT}:${CONROLLER_PORT}"
-  mysql:
-    image: ubuntu/mysql:8.0-20.04_edge
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_DATABASE: "${MY_SQL_DATABASE_NAME}"
-      MYSQL_ROOT_PASSWORD: "${MY_SQL_ROOT_PASSWORD}"
-      MYSQL_USER: "${MY_SQL_ROOT_USER}"
-      MYSQL_PASSWORD: "${MY_SQL_PASSWORD}"
-    ports:
-      - "3309:3306"
-  acapy:
+  acapymultytenant:
     image: vskgr/aca-py
     ports:
       - "${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}"
       - "${ACAPY_ENDPOINT_PORT}:${ACAPY_ENDPOINT_PORT}"
     environment:
-      WAIT_HOSTS: "db:5432"
+      WAIT_HOSTS: "db-mt:5432"
       WAIT_HOSTS_TIMEOUT: "300"
       WAIT_SLEEP_INTERVAL: "5"
       WAIT_HOST_CONNECT_TIMEOUT: "3"
       ACAPY_ENDPOINT: "${ACAPY_ENDPOINT}"
       ACAPY_GENESIS_URL: "${LEDGER_URL}/genesis"
-      ACAPY_INBOUND_TRANSPORT: "[[\"http\", \"0.0.0.0\", \"8880\"]]"
+      ACAPY_INBOUND_TRANSPORT: "[[\"http\", \"0.0.0.0\", \"9990\"]]"
       ACAPY_OUTBOUND_TRANSPORT: http
       LEDGER_URL: "${LEDGER_URL}"
       ACAPY_TAILS_SERVER_BASE_URL: "${TAILS_SERVER_URL}"
@@ -39,9 +22,9 @@ services:
       ACAPY_WEBHOOK_URL: "${WEB_HOOK_URL}"
       ACAPY_WALLET_TYPE: "indy"
       ACAPY_WALLET_KEY: "${ACAPY_WALLET_KEY}"
-      ACAPY_WALLET_NAME: "alpha_corp"
+      ACAPY_WALLET_NAME: "multy_tenant"
       ACAPY_WALLET_STORAGE_TYPE: "postgres_storage"
-      ACAPY_WALLET_STORAGE_CONFIG: '{"url":"db:5432","max_connections":5}'
+      ACAPY_WALLET_STORAGE_CONFIG: '{"url":"db-mt:5432","max_connections":5}'
       ACAPY_WALLET_STORAGE_CREDS: '{"account": "postgres","password":"password","admin_account":"postgres","admin_password":"password"}'
       ACAPY_WALLET_SEED: "${ACAPY_WALLET_SEED_ONE}"
       ACAPY_AUTO_PROVISION: "true"
@@ -51,7 +34,7 @@ services:
       ACAPY_LOG_LEVEL: "${ACAPY_LOG_LEVEL}"
     command: "start --admin 0.0.0.0 ${ACAPY_ADMIN_PORT}"
 
-  db:
+  db-mt:
     image: postgres:latest
     hostname: db
     environment:
@@ -61,11 +44,11 @@ services:
       - ./postgres:/docker-entrypoint-initdb.d/
       - ./.postgres:/var/lib/postgresql
     ports:
-      - "5432:5432"
-  tails-server:
+      - "5433:5432"
+  tails-server-mt:
     image: vskgr/tails-server
     ports:
-      - 6543:6543
+      - 6544:6544
     volumes:
       - /issuer/tails-files:/tails-files/
     environment:
@@ -74,15 +57,15 @@ services:
     command: >
       tails-server
         --host 0.0.0.0
-        --port 6543
+        --port 6544
         --storage-path /tails-files
         --log-level INFO
-  pgAdmin:
-    container_name: pgadmin4_container
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    ports:
-      - "5050:80"
+  # pgAdmin:
+  #   container_name: pgadmin4_container
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: root
+  #   ports:
+  #     - "5050:80"
