@@ -1,0 +1,7 @@
+msc-alfa-corp/.env
+msc-alfa-corp/.postgres/*
+msc-alfa-corp/postgres/*
+
+msc-multitenan/.env
+msc-multitenan/.postgres/*
+msc-multitenan/postgres/*

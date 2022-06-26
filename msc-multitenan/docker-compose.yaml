@@ -7,7 +7,7 @@ services:
       - "${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}"
       - "${ACAPY_ENDPOINT_PORT}:${ACAPY_ENDPOINT_PORT}"
     environment:
-      WAIT_HOSTS: "db-mt:5432"
+      WAIT_HOSTS: "dbmt:4444"
       WAIT_HOSTS_TIMEOUT: "300"
       WAIT_SLEEP_INTERVAL: "5"
       WAIT_HOST_CONNECT_TIMEOUT: "3"
@@ -22,9 +22,9 @@ services:
       ACAPY_WEBHOOK_URL: "${WEB_HOOK_URL}"
       ACAPY_WALLET_TYPE: "indy"
       ACAPY_WALLET_KEY: "${ACAPY_WALLET_KEY}"
-      ACAPY_WALLET_NAME: "multy_tenant"
+      ACAPY_WALLET_NAME: "multytenant"
       ACAPY_WALLET_STORAGE_TYPE: "postgres_storage"
-      ACAPY_WALLET_STORAGE_CONFIG: '{"url":"db-mt:5432","max_connections":5}'
+      ACAPY_WALLET_STORAGE_CONFIG: '{"url":"dbmt:4444","max_connections":5}'
       ACAPY_WALLET_STORAGE_CREDS: '{"account": "postgres","password":"password","admin_account":"postgres","admin_password":"password"}'
       ACAPY_WALLET_SEED: "${ACAPY_WALLET_SEED_ONE}"
       ACAPY_AUTO_PROVISION: "true"
@@ -34,9 +34,9 @@ services:
       ACAPY_LOG_LEVEL: "${ACAPY_LOG_LEVEL}"
     command: "start --admin 0.0.0.0 ${ACAPY_ADMIN_PORT}"
 
-  db-mt:
+  dbmt:
     image: postgres:latest
-    hostname: db
+    hostname: dbmt
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -44,7 +44,8 @@ services:
       - ./postgres:/docker-entrypoint-initdb.d/
       - ./.postgres:/var/lib/postgresql
     ports:
-      - "5433:5432"
+      - "4444:4444"
+    command: -p 4444
   tails-server-mt:
     image: vskgr/tails-server
     ports:
