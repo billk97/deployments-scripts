@@ -20,6 +20,8 @@ services:
       - "3309:3306"
   acapy:
     image: vskgr/aca-py
+    container_name: acapy
+    hostname: acapy
     ports:
       - "${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}"
       - "${ACAPY_ENDPOINT_PORT}:${ACAPY_ENDPOINT_PORT}"
@@ -77,12 +79,12 @@ services:
         --port 6543
         --storage-path /tails-files
         --log-level INFO
-  pgAdmin:
-    container_name: pgadmin4_container
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    ports:
-      - "5050:80"
+  # pgAdmin:
+  #   container_name: pgadmin4_container
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: root
+  #   ports:
+  #     - "5050:80"
