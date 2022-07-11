@@ -6,14 +6,14 @@ services:
     container_name: mtacapy
     hostname: mtacapy
     ports:
-      - "${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}"
-      - "${ACAPY_ENDPOINT_PORT}:${ACAPY_ENDPOINT_PORT}"
+      - "${MT_ACAPY_ADMIN_PORT}:${MT_ACAPY_ADMIN_PORT}"
+      - "${MT_ACAPY_ENDPOINT_PORT}:${MT_ACAPY_ENDPOINT_PORT}"
     environment:
       WAIT_HOSTS: "dbmt:4444"
       WAIT_HOSTS_TIMEOUT: "300"
       WAIT_SLEEP_INTERVAL: "5"
       WAIT_HOST_CONNECT_TIMEOUT: "3"
-      ACAPY_ENDPOINT: "${ACAPY_ENDPOINT}"
+      ACAPY_ENDPOINT: "${MT_ACAPY_ENDPOINT}"
       ACAPY_GENESIS_URL: "${LEDGER_URL}/genesis"
       ACAPY_INBOUND_TRANSPORT: "[[\"http\", \"0.0.0.0\", \"9990\"]]"
       ACAPY_OUTBOUND_TRANSPORT: http
@@ -23,22 +23,29 @@ services:
       ACAPY_TRACE_TAG: acapy.event
       ACAPY_WEBHOOK_URL: "${WEB_HOOK_URL}"
       ACAPY_WALLET_TYPE: "indy"
-      ACAPY_WALLET_KEY: "${ACAPY_WALLET_KEY}"
+      ACAPY_WALLET_KEY: "${MT_ACAPY_WALLET_KEY}"
       ACAPY_WALLET_NAME: "multytenant"
       ACAPY_WALLET_STORAGE_TYPE: "postgres_storage"
       ACAPY_WALLET_STORAGE_CONFIG: '{"url":"dbmt:4444","max_connections":5}'
       ACAPY_WALLET_STORAGE_CREDS: '{"account": "postgres","password":"password","admin_account":"postgres","admin_password":"password"}'
-      ACAPY_WALLET_SEED: "${ACAPY_WALLET_SEED_ONE}"
+      # ACAPY_WALLET_SEED: "${MT_ACAPY_WALLET_SEED_TWO}"
       ACAPY_AUTO_PROVISION: "true"
       ACAPY_ADMIN_INSECURE_MODE: "true"
       ACAPY_AUTO_PING_CONNECTION: "true"
       ACAPY_RECREATE_WALLET: "true"
       ACAPY_MULTITENANT: "true"
-      ACAPY_MULTITENANT_JWT_SECRET: "${ACAPY_MULTITENANT_JWT_SECRET}"
+      ACAPY_MULTITENANT_JWT_SECRET: "${MT_ACAPY_MULTITENANT_JWT_SECRET}"
       ACAPY_MULTITENANT_ADMIN: "true"
-      ACAPY_LABEL: "${ACAPY_LABEL}"
-      ACAPY_LOG_LEVEL: "${ACAPY_LOG_LEVEL}"
-    command: "start --admin 0.0.0.0 ${ACAPY_ADMIN_PORT}"
+      ACAPY_LABEL: "${MT_ACAPY_LABEL}"
+      ACAPY_LOG_LEVEL: "${MT_ACAPY_LOG_LEVEL}"
+      ACAPY_ENDORSER_ROLE: "author"
+      ACAPY_ENDORSER_PUBLIC_DID: "Lr6x5dBr72ZXqf9au9Xz44"
+      ACAPY_ENDORSER_ALIAS: "endorse-2"
+      ACAPY_AUTO_REQUEST_ENDORSEMENT: "true"
+      ACAPY_AUTO_WRITE_TRANSACTIONS: "true"
+      ACAPY_CREATE_REVOCATION_TRANSACTIONS: "true"
+      ACAPY_PROMOTE-AUTHOR-DID: "true"
+    command: "start --admin 0.0.0.0 ${MT_ACAPY_ADMIN_PORT}"
 
   dbmt:
     image: postgres:latest
@@ -53,6 +60,8 @@ services:
     ports:
       - "4444:4444"
     command: -p 4444
+
+
   tails-server-mt:
     image: vskgr/tails-server
     ports:
@@ -68,6 +77,58 @@ services:
         --port 6544
         --storage-path /tails-files
         --log-level INFO
+
+  acapyendorser:
+    image: vskgr/aca-py
+    ports:
+      - "${EN_ACAPY_ADMIN_PORT}:${EN_ACAPY_ADMIN_PORT}"
+      - "${EN_ACAPY_ENDPOINT_PORT}:${EN_ACAPY_ENDPOINT_PORT}"
+    environment:
+      WAIT_HOSTS: "edbmt:5555"
+      WAIT_HOSTS_TIMEOUT: "300"
+      WAIT_SLEEP_INTERVAL: "5"
+      WAIT_HOST_CONNECT_TIMEOUT: "3"
+      ACAPY_ENDPOINT: "${EN_ACAPY_ENDPOINT}"
+      ACAPY_GENESIS_URL: "${LEDGER_URL}/genesis"
+      ACAPY_INBOUND_TRANSPORT: "[[\"http\", \"0.0.0.0\", \"9991\"]]"
+      ACAPY_OUTBOUND_TRANSPORT: http
+      LEDGER_URL: "${LEDGER_URL}"
+      ACAPY_TAILS_SERVER_BASE_URL: "${TAILS_SERVER_URL}"
+      ACAPY_TRACE_TARGET: log
+      ACAPY_TRACE_TAG: acapy.event
+      ACAPY_WEBHOOK_URL: "${WEB_HOOK_URL}"
+      ACAPY_WALLET_TYPE: "indy"
+      ACAPY_WALLET_KEY: "${EN_ACAPY_WALLET_KEY}"
+      ACAPY_WALLET_NAME: "endorser"
+      ACAPY_WALLET_STORAGE_TYPE: "postgres_storage"
+      ACAPY_WALLET_STORAGE_CONFIG: '{"url":"edbmt:5555","max_connections":5}'
+      ACAPY_WALLET_STORAGE_CREDS: '{"account": "postgres","password":"password","admin_account":"postgres","admin_password":"password"}'
+      ACAPY_WALLET_SEED: "${EN_ACAPY_WALLET_SEED_TWO}"
+      ACAPY_AUTO_ACCEPT_INVITES: "true"
+      ACAPY_AUTO_ACCEPT_REQUESTS: "true"
+      ACAPY_AUTO_RESPOND_MESSAGES: "true"
+      ACAPY_AUTO_PROVISION: "true"
+      ACAPY_ADMIN_INSECURE_MODE: "true"
+      ACAPY_AUTO_PING_CONNECTION: "true"
+      ACAPY_RECREATE_WALLET: "true"
+      ACAPY_LABEL: "${EN_ACAPY_LABEL}"
+      ACAPY_LOG_LEVEL: "${EN_ACAPY_LOG_LEVEL}"
+      ACAPY_ENDORSER_ROLE: "endorser"
+      ACAPY_AUTO_ENDORSE_TRANSACTIONS: "true"
+    command: "start --admin 0.0.0.0 ${EN_ACAPY_ADMIN_PORT}"
+
+  edbmt:
+    image: postgres:latest
+    hostname: edbmt
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./enpostgres:/docker-entrypoint-initdb.d/
+      - ./.enpostgres:/var/lib/postgresql
+    ports:
+      - "5555:5555"
+    command: -p 5555
   # pgAdmin:
   #   container_name: pgadmin4_container
   #   image: dpage/pgadmin4
