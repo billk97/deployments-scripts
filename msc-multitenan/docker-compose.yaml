@@ -3,6 +3,8 @@ version: '3'
 services:
   acapymultytenant:
     image: vskgr/aca-py
+    container_name: mtacapy
+    hostname: mtacapy
     ports:
       - "${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}"
       - "${ACAPY_ENDPOINT_PORT}:${ACAPY_ENDPOINT_PORT}"
@@ -32,7 +34,7 @@ services:
       ACAPY_AUTO_PING_CONNECTION: "true"
       ACAPY_RECREATE_WALLET: "true"
       ACAPY_MULTITENANT: "true"
-      ACAPY_MULTITENANT_JWT_SECRET: "${ACAPY_JWT_SECRET}"
+      ACAPY_MULTITENANT_JWT_SECRET: "${ACAPY_MULTITENANT_JWT_SECRET}"
       ACAPY_MULTITENANT_ADMIN: "true"
       ACAPY_LABEL: "${ACAPY_LABEL}"
       ACAPY_LOG_LEVEL: "${ACAPY_LOG_LEVEL}"
@@ -41,6 +43,7 @@ services:
   dbmt:
     image: postgres:latest
     hostname: dbmt
+    container_name: dbmt
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
