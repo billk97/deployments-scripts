@@ -84,7 +84,7 @@ services:
       - "${EN_ACAPY_ADMIN_PORT}:${EN_ACAPY_ADMIN_PORT}"
       - "${EN_ACAPY_ENDPOINT_PORT}:${EN_ACAPY_ENDPOINT_PORT}"
     environment:
-      WAIT_HOSTS: "edbmt:5555"
+      WAIT_HOSTS: "edbmt:6666"
       WAIT_HOSTS_TIMEOUT: "300"
       WAIT_SLEEP_INTERVAL: "5"
       WAIT_HOST_CONNECT_TIMEOUT: "3"
@@ -101,7 +101,7 @@ services:
       ACAPY_WALLET_KEY: "${EN_ACAPY_WALLET_KEY}"
       ACAPY_WALLET_NAME: "endorser"
       ACAPY_WALLET_STORAGE_TYPE: "postgres_storage"
-      ACAPY_WALLET_STORAGE_CONFIG: '{"url":"edbmt:5555","max_connections":5}'
+      ACAPY_WALLET_STORAGE_CONFIG: '{"url":"edbmt:6666","max_connections":5}'
       ACAPY_WALLET_STORAGE_CREDS: '{"account": "postgres","password":"password","admin_account":"postgres","admin_password":"password"}'
       ACAPY_WALLET_SEED: "${EN_ACAPY_WALLET_SEED_TWO}"
       ACAPY_AUTO_ACCEPT_INVITES: "true"
@@ -127,8 +127,8 @@ services:
       - ./enpostgres:/docker-entrypoint-initdb.d/
       - ./.enpostgres:/var/lib/postgresql
     ports:
-      - "5555:5555"
-    command: -p 5555
+      - "6666:6666"
+    command: -p 6666
   # pgAdmin:
   #   container_name: pgadmin4_container
   #   image: dpage/pgadmin4
